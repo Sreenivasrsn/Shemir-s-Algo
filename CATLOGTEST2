@@ -1,0 +1,63 @@
+#include <iostream>
+#include <map>
+#include <cmath>
+#include <string>
+
+// Function to convert string from a given base to decimal
+long long baseToDecimal(const std::string &value, int base) {
+    long long result = 0;
+    long long power = 1;  // Initialize power of base to 1
+    for (int i = value.length() - 1; i >= 0; i--) {
+        char c = value[i];
+        int digit = (isdigit(c)) ? c - '0' : toupper(c) - 'A' + 10;
+        result += digit * power;
+        power *= base;
+    }
+    return result;
+}
+
+// Lagrange Interpolation to find constant term (c)
+double lagrangeInterpolation(const std::map<int, long long> &points) {
+    double result = 0.0;
+    for (auto &p1 : points) {
+        double term = p1.second; // f(xi)
+        for (auto &p2 : points) {
+            if (p1.first != p2.first) {
+                term *= (0.0 - p2.first) / (p1.first - p2.first); // Multiply by (x - xj) / (xi - xj)
+            }
+        }
+        result += term;
+    }
+    return result;
+}
+
+int main() {
+    // Input data from the new test case
+    std::map<int, std::pair<int, std::string>> input = {
+        {1, {10, "28735619723837"}},  // base 10
+        {2, {16, "1A228867F0CA"}},    // base 16
+        {3, {12, "32811A4AA0B7B"}},   // base 12
+        {4, {11, "917978721331A"}},   // base 11
+        {5, {16, "1A22886782E1"}},    // base 16
+        {6, {10, "28735619654702"}},  // base 10
+        {7, {14, "71AB5070CC4B"}},    // base 14
+        {8, {9, "122662581541670"}},  // base 9
+        {9, {8, "642121030037605"}}   // base 8
+    };
+
+    // Convert the input to (x, f(x)) in decimal form
+    std::map<int, long long> points;
+    for (const auto &p : input) {
+        int x = p.first;
+        int base = p.second.first;
+        std::string value = p.second.second;
+        points[x] = baseToDecimal(value, base);
+    }
+
+    // Calculate the constant term using Lagrange Interpolation
+    double c = lagrangeInterpolation(points);
+
+    std::cout << "The constant term c is: " << c << std::endl;
+    return 0;
+}
+ 
